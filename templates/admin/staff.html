@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Staff | SummitDesk{% endblock %}
+
+{% block content %}
+<h1 class="h2 mb-3">Manage Staff</h1>
+<form method="GET" action="{{ url_for('admin.staff') }}" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Search staff" value="{{ q }}">
+        <button class="btn btn-outline-secondary" type="submit">Search</button>
+        {% if q %}
+            <a class="btn btn-outline-secondary" href="{{ url_for('admin.staff') }}">Clear</a>
+        {% endif %}
+    </div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in staff_list %}
+                    <tr>
+                        <td>{{ member.name }}</td>
+                        <td>{{ member.username }}</td>
+                        <td>{{ member.email }}</td>
+                        <td>
+                            {% if member.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Pending Approval</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="POST" action="{{ url_for('admin.staff_toggle', user_id=member.id) }}">
+                                <button class="btn btn-sm {{ 'btn-warning' if member.is_active else 'btn-success' }}" type="submit">
+                                    {{ 'Deactivate' if member.is_active else 'Approve' }}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-muted">No staff found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

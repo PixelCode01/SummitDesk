@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Treks | SummitDesk{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="h2 mb-1">Manage Treks</h1>
+        <p class="text-muted mb-0">Search, assign staff, update statuses, and edit trek details.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('admin.trek_new') }}">Create Trek</a>
+</div>
+
+<form method="GET" action="{{ url_for('admin.treks') }}" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Search by name or ID" value="{{ q }}">
+        <button class="btn btn-outline-secondary" type="submit">Search</button>
+        {% if q %}
+            <a class="btn btn-outline-secondary" href="{{ url_for('admin.treks') }}">Clear</a>
+        {% endif %}
+    </div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Trek</th>
+                    <th>Difficulty</th>
+                    <th>Status</th>
+                    <th>Staff</th>
+                    <th>Slots</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for trek in treks %}
+                    <tr>
+                        <td>{{ trek.id }}</td>
+                        <td>
+                            <a href="{{ url_for('auth.trek_detail', trek_id=trek.id) }}">{{ trek.name }}</a>
+                            <div class="small text-muted">{{ trek.location }}</div>
+                        </td>
+                        <td>{{ trek.difficulty }}</td>
+                        <td>{% include 'partials/status_badge.html' %}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('admin.assign_staff', trek_id=trek.id) }}" class="d-flex gap-2">
+                                <select name="staff_id" class="form-select form-select-sm">
+                                    <option value="">Unassigned</option>
+                                    {% for member in staff_list %}
+                                        <option value="{{ member.id }}" {% if trek.assigned_staff == member.id %}selected{% endif %}>
+                                            {{ member.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <button class="btn btn-sm btn-outline-primary" type="submit">Save</button>
+                            </form>
+                        </td>
+                        <td>{{ trek.available_slots }} / {{ trek.total_slots }}</td>
+                        <td>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.trek_edit', trek_id=trek.id) }}">Edit</a>
+                                <a class="btn btn-sm btn-outline-danger" href="{{ url_for('admin.trek_delete_confirm', trek_id=trek.id) }}">Delete</a>
+                                {% for next_status in transitions.get(trek.status, []) %}
+                                    <form method="POST" action="{{ url_for('admin.trek_status', trek_id=trek.id) }}">
+                                        <input type="hidden" name="status" value="{{ next_status }}">
+                                        <button class="btn btn-sm btn-outline-secondary" type="submit">{{ next_status }}</button>
+                                    </form>
+                                {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-muted">No treks found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+    {% if pagination %}
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {{ 'disabled' if not pagination.has_prev }}">
+                <a class="page-link" href="{{ url_for('admin.treks', page=pagination.prev_num, q=q) }}">Previous</a>
+            </li>
+
+            {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if p %}
+                <li class="page-item {{ 'active' if p == pagination.page }}">
+                    <a class="page-link" href="{{ url_for('admin.treks', page=p, q=q) }}">{{ p }}</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% endif %}
+            {% endfor %}
+
+            <li class="page-item {{ 'disabled' if not pagination.has_next }}">
+                <a class="page-link" href="{{ url_for('admin.treks', page=pagination.next_num, q=q) }}">Next</a>
+            </li>
+        </ul>
+    </nav>
+    <p class="text-center text-muted small">Showing {{ treks | length }} of {{ pagination.total }} treks</p>
+    {% endif %}
+
+    {% endblock %}
