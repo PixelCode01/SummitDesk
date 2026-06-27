@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage {{ trek.name }} | SummitDesk{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4">
+    <div>
+        <p class="text-uppercase text-muted small fw-semibold mb-1">{{ trek.location }}</p>
+        <h1 class="h2 mb-1">{{ trek.name }}</h1>
+        <p class="text-muted mb-0">{{ trek.start_date }} to {{ trek.end_date }} | {{ trek.difficulty }}</p>
+    </div>
+    {% include 'partials/status_badge.html' %}
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h2 class="h5">Slots</h2>
+                <form method="POST" action="{{ url_for('staff.trek_edit', trek_id=trek.id) }}">
+                    <label class="form-label" for="available_slots">Available Slots</label>
+                    <input type="number" id="available_slots" name="available_slots" class="form-control" min="0" max="{{ trek.total_slots }}" value="{{ trek.available_slots }}" required>
+                    <div class="form-text">Total slots: {{ trek.total_slots }}</div>
+                    <button class="btn btn-primary mt-3" type="submit">Update Slots</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Status</h2>
+                {% for next_status in transitions.get(trek.status, []) %}
+                    <form method="POST" action="{{ url_for('staff.trek_status', trek_id=trek.id) }}" class="d-inline-block mb-2">
+                        <input type="hidden" name="status" value="{{ next_status }}">
+                        <button class="btn btn-outline-secondary btn-sm" type="submit">Mark as {{ next_status }}</button>
+                    </form>
+                {% else %}
+                    <p class="text-muted mb-0">No status changes available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Participants</h2>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Phone</th>
+                                <th>Booked On</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in participants %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ booking.trekker.name }}</td>
+                                    <td>{{ booking.trekker.username }}</td>
+                                    <td>{{ booking.trekker.phone or '-' }}</td>
+                                    <td>{{ booking.booked_at.strftime('%d %b %Y') }}</td>
+                                    <td><span class="badge bg-success">{{ booking.status }}</span></td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-muted">No participants yet.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Staff Dashboard | SummitDesk{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="h2 mb-1">Staff Dashboard</h1>
+        <p class="text-muted mb-0">Manage only the treks assigned to you.</p>
+    </div>
+</div>
+
+<div class="row g-3">
+    {% for trek in treks %}
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between gap-3">
+                        <h2 class="h5">{{ trek.name }}</h2>
+                        {% include 'partials/status_badge.html' %}
+                    </div>
+                    <p class="text-muted mb-2">{{ trek.location }}</p>
+                    <dl class="row small">
+                        <dt class="col-6">Slots</dt>
+                        <dd class="col-6">{{ trek.available_slots }} / {{ trek.total_slots }}</dd>
+                        <dt class="col-6">Participants</dt>
+                        <dd class="col-6">{{ trek.bookings | selectattr('status', 'eq', 'Booked') | list | length }}</dd>
+                        <dt class="col-6">Starts</dt>
+                        <dd class="col-6">{{ trek.start_date }}</dd>
+                    </dl>
+                    <a class="btn btn-primary w-100" href="{{ url_for('staff.trek_detail', trek_id=trek.id) }}">Manage</a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-12">
+            <div class="empty-state text-center">
+                <h2 class="h4">No treks assigned yet</h2>
+                <p class="text-muted mb-0">Assigned treks will appear here after admin links them to your account.</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+    {% if treks %}
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Participants Per Trek</h5>
+            <canvas id="staffChart" height="120"></canvas>
+        </div>
+    </div>
+    {% endif %}
+
+    {% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    {% if treks %}
+    <script>
+    new Chart(document.getElementById('staffChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: {{ chart_labels | tojson }},
+            datasets: [{
+                label: 'Registered Trekkers',
+                data: {{ chart_data | tojson }},
+                backgroundColor: 'rgba(45, 106, 79, 0.65)'
+            }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+    });
+    </script>
+    {% endif %}
+    {% endblock %}
+{% endblock %}
