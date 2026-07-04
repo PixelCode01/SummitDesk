@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ trek.name }} | SummitDesk{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-8">
+        <p class="text-uppercase text-muted small fw-semibold mb-1">{{ trek.location }}</p>
+        <h1 class="h2">{{ trek.name }}</h1>
+        <p class="lead">{{ trek.description or 'More details about this trek will be available soon.' }}</p>
+    </div>
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Trek Summary</h2>
+                <dl class="row">
+                    <dt class="col-6">Difficulty</dt>
+                    <dd class="col-6">{{ trek.difficulty }}</dd>
+                    <dt class="col-6">Duration</dt>
+                    <dd class="col-6">{{ trek.duration_days }} days</dd>
+                    <dt class="col-6">Start</dt>
+                    <dd class="col-6">{{ trek.start_date }}</dd>
+                    <dt class="col-6">End</dt>
+                    <dd class="col-6">{{ trek.end_date }}</dd>
+                    <dt class="col-6">Slots</dt>
+                    <dd class="col-6">{{ trek.available_slots }} / {{ trek.total_slots }}</dd>
+                </dl>
+                {% if already_booked %}
+                    <button class="btn btn-secondary w-100" disabled>Already Booked</button>
+                {% elif trek.available_slots == 0 %}
+                    <button class="btn btn-secondary w-100" disabled>Fully Booked</button>
+                {% else %}
+                    <form method="POST" action="{{ url_for('user.book', trek_id=trek.id) }}">
+                        <button class="btn btn-success w-100" type="submit">Book This Trek</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

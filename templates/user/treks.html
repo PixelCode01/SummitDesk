@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Treks | SummitDesk{% endblock %}
+
+{% block content %}
+<h1 class="h2 mb-3">Browse Treks</h1>
+<form method="GET" action="{{ url_for('user.treks') }}" class="mb-4">
+    <div class="row g-2">
+        <div class="col-md-4">
+            <input type="text" name="q" class="form-control" placeholder="Search treks" value="{{ q }}">
+        </div>
+        <div class="col-md-3">
+            <select name="difficulty" class="form-select">
+                <option value="">All Difficulties</option>
+                {% for d in ['Easy', 'Moderate', 'Hard'] %}
+                    <option value="{{ d }}" {{ 'selected' if difficulty == d }}>{{ d }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="location" class="form-control" placeholder="Location" value="{{ location }}">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100" type="submit">Filter</button>
+        </div>
+    </div>
+</form>
+
+<div class="row g-3">
+    {% for trek in treks %}
+        <div class="col-md-6 col-xl-4">
+            <div class="card trek-card h-100">
+                <div class="trek-card-img-wrap">
+                    {% if trek.image_filename %}
+                    <img src="{{ url_for('static', filename='img/treks/' + trek.image_filename) }}" class="trek-card-img" alt="{{ trek.name }}">
+                    {% else %}
+                    <div class="trek-card-img-placeholder"></div>
+                    {% endif %}
+                    <div class="trek-card-badge"><span class="badge bg-info text-dark">{{ trek.difficulty }}</span></div>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h2 class="h5 mb-1">{{ trek.name }}</h2>
+                    <p class="text-muted small mb-2">{{ trek.location }}</p>
+                    <p class="flex-grow-1 small">{{ trek.description or 'Details coming soon.' }}</p>
+                    <dl class="row small mb-3 mt-auto">
+                        <dt class="col-6">Duration</dt>
+                        <dd class="col-6">{{ trek.duration_days }} days</dd>
+                        <dt class="col-6">Dates</dt>
+                        <dd class="col-6">{{ trek.start_date }} – {{ trek.end_date }}</dd>
+                        <dt class="col-6">Slots</dt>
+                        <dd class="col-6">{{ trek.available_slots }}</dd>
+                    </dl>
+                    <a class="btn btn-outline-primary w-100" href="{{ url_for('user.trek_detail', trek_id=trek.id) }}">View</a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-12">
+            <div class="empty-state text-center">
+                <h2 class="h5">No open treks found</h2>
+                <p class="text-muted mb-0">Try changing the search filters.</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

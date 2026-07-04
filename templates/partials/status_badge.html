@@ -1,0 +1,9 @@
+<span class="badge
+    {% if trek.status == 'Open' %}bg-success
+    {% elif trek.status == 'Closed' %}bg-secondary
+    {% elif trek.status == 'Pending' %}bg-warning text-dark
+    {% elif trek.status == 'Completed' %}bg-dark
+    {% elif trek.status == 'Approved' %}bg-info text-dark
+    {% else %}bg-primary{% endif %}">
+    {{ trek.status }}
+</span>

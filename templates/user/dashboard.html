@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}User Dashboard | SummitDesk{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="h2 mb-1">User Dashboard</h1>
+        <p class="text-muted mb-0">{{ open_trek_count }} open trek{{ '' if open_trek_count == 1 else 's' }} available to explore.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('user.treks') }}">Browse Treks</a>
+</div>
+
+<h2 class="h5 mb-3">Upcoming Bookings</h2>
+<div class="row g-3">
+    {% for booking in bookings %}
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between gap-3">
+                        <h3 class="h5">{{ booking.trek.name }}</h3>
+                        <span class="badge bg-success">{{ booking.status }}</span>
+                    </div>
+                    <p class="text-muted mb-2">{{ booking.trek.location }}</p>
+                    <p class="mb-0">{{ booking.trek.start_date }} to {{ booking.trek.end_date }}</p>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-12">
+            <div class="empty-state text-center">
+                <h3 class="h5">No upcoming bookings</h3>
+                <p class="text-muted mb-0">Browse open treks to book your next trip.</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

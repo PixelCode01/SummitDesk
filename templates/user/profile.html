@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile | SummitDesk{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="h3 mb-4">Profile</h1>
+                <form method="POST" action="{{ url_for('user.profile') }}">
+                    <div class="mb-3">
+                        <label class="form-label" for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ current_user.name }}" minlength="2" maxlength="120" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" maxlength="120" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="phone">Phone</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ current_user.phone or '' }}" maxlength="20">
+                    </div>
+                    <button class="btn btn-primary" type="submit">Update Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

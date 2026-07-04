@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings | SummitDesk{% endblock %}
+
+{% block content %}
+<h1 class="h2 mb-3">My Bookings</h1>
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Trek</th>
+                    <th>Location</th>
+                    <th>Start Date</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                    <tr>
+                        <td>{{ booking.trek.name }}</td>
+                        <td>{{ booking.trek.location }}</td>
+                        <td>{{ booking.trek.start_date }}</td>
+                        <td>
+                            <span class="badge
+                                {% if booking.status == 'Booked' %}bg-success
+                                {% elif booking.status == 'Cancelled' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                {{ booking.status }}
+                            </span>
+                        </td>
+                        <td>{{ booking.payment_status }}</td>
+                        <td>
+                            {% if booking.status == 'Booked' %}
+                                <form method="POST" action="{{ url_for('user.cancel_booking', booking_id=booking.id) }}">
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Cancel</button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-muted">No bookings yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
