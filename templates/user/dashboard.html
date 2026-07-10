@@ -5,8 +5,8 @@
 {% block content %}
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
-        <h1 class="h2 mb-1">User Dashboard</h1>
-        <p class="text-muted mb-0">{{ open_trek_count }} open trek{{ '' if open_trek_count == 1 else 's' }} available to explore.</p>
+        <h1 class="h2 mb-1">Welcome, {{ current_user.name }}!</h1>
+        <p class="text-muted mb-0">Your Dashboard &bull; {{ open_trek_count }} open trek{{ '' if open_trek_count == 1 else 's' }} available to explore.</p>
     </div>
     <a class="btn btn-primary" href="{{ url_for('user.treks') }}">Browse Treks</a>
 </div>

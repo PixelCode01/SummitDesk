@@ -118,8 +118,8 @@ new Chart(bookingsCtx, {
         datasets: [{
             label: 'Bookings',
             data: {{ chart_data | tojson }},
-            backgroundColor: 'rgba(45, 106, 79, 0.65)',
-            borderColor: '#2d6a4f',
+            backgroundColor: 'rgba(42, 71, 55, 0.65)',
+            borderColor: '#2A4737',
             borderWidth: 1
         }]
     },
@@ -136,7 +136,7 @@ new Chart(document.getElementById('statusChart').getContext('2d'), {
         labels: {{ statuses | tojson }},
         datasets: [{
             data: {{ status_counts | tojson }},
-            backgroundColor: ['#f9a825','#40916c','#2d6a4f','#9e9e9e','#1b4332']
+            backgroundColor: ['#2A4737', '#C26D5C', '#E8E4DD', '#6B655F', '#1E3327']
         }]
     },
     options: { responsive: true, plugins: { legend: { position: 'right' } } }
