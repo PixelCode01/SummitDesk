@@ -125,8 +125,15 @@ def cancel_booking(booking_id):
     # auto-assign next from waitlist if present
     next_in_line = Waitlist.query.filter_by(trek_id=booking.trek_id).order_by(Waitlist.joined_at.asc()).first()
     if next_in_line:
-        new_booking = Booking(user_id=next_in_line.user_id, trek_id=booking.trek_id, status='Booked')
-        db.session.add(new_booking)
+        existing_cancelled = Booking.query.filter_by(user_id=next_in_line.user_id, trek_id=booking.trek_id, status='Cancelled').first()
+        if existing_cancelled:
+            existing_cancelled.status = 'Booked'
+            existing_cancelled.payment_status = 'Pending'
+            existing_cancelled.booked_at = datetime.utcnow()
+        else:
+            new_booking = Booking(user_id=next_in_line.user_id, trek_id=booking.trek_id, status='Booked')
+            db.session.add(new_booking)
+            
         booking.trek.available_slots -= 1
         db.session.delete(next_in_line)
 

@@ -118,7 +118,10 @@ def trek_delete(trek_id):
     trek = Trek.query.get(trek_id)
     if not trek:
         return jsonify({'error': 'Trek not found'}), 404
+    from models import Waitlist, Review
     Booking.query.filter_by(trek_id=trek_id).delete()
+    Waitlist.query.filter_by(trek_id=trek_id).delete()
+    Review.query.filter_by(trek_id=trek_id).delete()
     db.session.delete(trek)
     db.session.commit()
     return jsonify({'message': 'Trek deleted'})

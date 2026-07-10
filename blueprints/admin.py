@@ -218,7 +218,10 @@ def trek_delete_confirm(trek_id):
 @admin_required
 def trek_delete(trek_id):
     trek = Trek.query.get_or_404(trek_id)
+    from models import Waitlist, Review
     Booking.query.filter_by(trek_id=trek.id).delete()
+    Waitlist.query.filter_by(trek_id=trek.id).delete()
+    Review.query.filter_by(trek_id=trek.id).delete()
     db.session.delete(trek)
     db.session.commit()
     flash('Trek deleted.', 'success')
