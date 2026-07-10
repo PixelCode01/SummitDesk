@@ -32,7 +32,19 @@ def treks():
 @auth_bp.route('/trek/<int:trek_id>')
 def trek_detail(trek_id):
     trek = Trek.query.get_or_404(trek_id)
-    return render_template('trek_detail.html', trek=trek)
+    
+    already_booked = False
+    can_review = False
+    on_waitlist = False
+    
+    if current_user.is_authenticated and current_user.role == 'trekker':
+        from models import Booking, Waitlist
+        existing = Booking.query.filter_by(user_id=current_user.id, trek_id=trek.id, status='Booked').first()
+        already_booked = existing is not None
+        can_review = Booking.query.filter_by(user_id=current_user.id, trek_id=trek.id, status='Completed').first() is not None
+        on_waitlist = Waitlist.query.filter_by(user_id=current_user.id, trek_id=trek.id).first() is not None
+        
+    return render_template('trek_detail.html', trek=trek, already_booked=already_booked, can_review=can_review, on_waitlist=on_waitlist)
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])

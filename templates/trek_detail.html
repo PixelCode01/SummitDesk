@@ -64,20 +64,20 @@
 {% if current_user.is_authenticated and current_user.role == 'trekker' %}
     <div class="mt-3">
         {% if trek.available_slots <= 0 %}
-            {% if on_waitlist is defined and not on_waitlist %}
+            {% if on_waitlist %}
+                <p class="text-muted small">You are on the waitlist for this trek.</p>
+            {% else %}
             <form method="POST" action="{{ url_for('user.join_waitlist', trek_id=trek.id) }}">
                 <button class="btn btn-outline-primary">Join Waitlist</button>
             </form>
-            {% elif on_waitlist is defined and on_waitlist %}
-                <p class="text-muted small">You are on the waitlist for this trek.</p>
             {% endif %}
         {% else %}
-            {% if already_booked is defined and not already_booked %}
+            {% if already_booked %}
+                <p class="text-muted small">You have already booked this trek.</p>
+            {% else %}
             <form method="POST" action="{{ url_for('user.book', trek_id=trek.id) }}">
                 <button class="btn btn-primary">Book Now</button>
             </form>
-            {% else %}
-                <p class="text-muted small">You have already booked this trek.</p>
             {% endif %}
         {% endif %}
 

@@ -184,6 +184,11 @@ def join_waitlist(trek_id):
     if trek.available_slots > 0:
         flash('Slots are available. Book directly instead.', 'info')
         return redirect(url_for('user.trek_detail', trek_id=trek_id))
+        
+    already_booked = Booking.query.filter_by(user_id=current_user.id, trek_id=trek_id, status='Booked').first()
+    if already_booked:
+        flash('You already have a booking for this trek.', 'warning')
+        return redirect(url_for('user.trek_detail', trek_id=trek_id))
 
     existing = Waitlist.query.filter_by(user_id=current_user.id, trek_id=trek_id).first()
     if existing:
