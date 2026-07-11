@@ -24,7 +24,7 @@ VALID_TRANSITIONS = {
     'Approved': ['Open', 'Closed'],
     'Open': ['Closed', 'Completed'],
     'Closed': ['Open', 'Completed'],
-    'Completed': [],
+    'Completed': ['Open', 'Closed'],
 }
 
 
@@ -238,6 +238,12 @@ def trek_status(trek_id):
     if new_status not in VALID_TRANSITIONS.get(trek.status, []):
         flash(f'Cannot move from {trek.status} to {new_status}.', 'danger')
         return redirect(url_for('admin.treks'))
+
+    if trek.status == 'Completed' and new_status in ['Open', 'Closed']:
+        Booking.query.filter_by(trek_id=trek.id, status='Completed').update({'status': 'Booked'})
+        
+    if new_status == 'Completed':
+        Booking.query.filter_by(trek_id=trek.id, status='Booked').update({'status': 'Completed'})
 
     trek.status = new_status
     db.session.commit()

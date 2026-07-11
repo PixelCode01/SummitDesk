@@ -12,6 +12,7 @@ STAFF_TRANSITIONS = {
     'Approved': ['Open'],
     'Open': ['Closed', 'Completed'],
     'Closed': ['Open', 'Completed'],
+    'Completed': ['Closed', 'Open'],
 }
 
 
@@ -39,7 +40,10 @@ def dashboard():
 @staff_required
 def trek_detail(trek_id):
     trek = get_assigned_trek_or_404(trek_id)
-    participants = Booking.query.filter_by(trek_id=trek.id, status='Booked').order_by(Booking.booked_at.desc()).all()
+    participants = Booking.query.filter(
+        Booking.trek_id == trek.id,
+        Booking.status.in_(['Booked', 'Completed'])
+    ).order_by(Booking.booked_at.desc()).all()
     return render_template(
         'staff/trek_detail.html',
         trek=trek,
@@ -79,6 +83,9 @@ def trek_status(trek_id):
     if new_status not in STAFF_TRANSITIONS.get(trek.status, []):
         flash(f'Cannot change from {trek.status} to {new_status}.', 'danger')
         return redirect(url_for('staff.trek_detail', trek_id=trek.id))
+
+    if trek.status == 'Completed' and new_status in ['Open', 'Closed']:
+        Booking.query.filter_by(trek_id=trek.id, status='Completed').update({'status': 'Booked'})
 
     trek.status = new_status
     if new_status == 'Completed':
