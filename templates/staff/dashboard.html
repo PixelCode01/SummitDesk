@@ -14,13 +14,13 @@
     {% for trek in treks %}
         <div class="col-md-6 col-xl-4">
             <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between gap-3">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
                         <h2 class="h5">{{ trek.name }}</h2>
                         {% include 'partials/status_badge.html' %}
                     </div>
                     <p class="text-muted mb-2">{{ trek.location }}</p>
-                    <dl class="row small">
+                    <dl class="row small mb-3 flex-grow-1">
                         <dt class="col-6">Slots</dt>
                         <dd class="col-6">{{ trek.available_slots }} / {{ trek.total_slots }}</dd>
                         <dt class="col-6">Participants</dt>
@@ -28,7 +28,9 @@
                         <dt class="col-6">Starts</dt>
                         <dd class="col-6">{{ trek.start_date }}</dd>
                     </dl>
-                    <a class="btn btn-primary w-100" href="{{ url_for('staff.trek_detail', trek_id=trek.id) }}">Manage</a>
+                    <div class="mt-auto">
+                        <a class="btn btn-primary w-100" href="{{ url_for('staff.trek_detail', trek_id=trek.id) }}">Manage</a>
+                    </div>
                 </div>
             </div>
         </div>
