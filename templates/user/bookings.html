@@ -37,6 +37,8 @@
                                 <form method="POST" action="{{ url_for('user.cancel_booking', booking_id=booking.id) }}">
                                     <button class="btn btn-sm btn-outline-danger" type="submit">Cancel</button>
                                 </form>
+                            {% elif booking.status == 'Completed' %}
+                                <a href="{{ url_for('user.review', trek_id=booking.trek.id) }}" class="btn btn-sm btn-outline-primary">Leave Review</a>
                             {% else %}
                                 <span class="text-muted">-</span>
                             {% endif %}

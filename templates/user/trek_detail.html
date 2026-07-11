@@ -25,6 +25,9 @@
                     <dt class="col-6">Slots</dt>
                     <dd class="col-6">{{ trek.available_slots }} / {{ trek.total_slots }}</dd>
                 </dl>
+                {% if can_review %}
+                    <a href="{{ url_for('user.review', trek_id=trek.id) }}" class="btn btn-primary w-100 mb-2">Leave a Review</a>
+                {% endif %}
                 {% if already_booked %}
                     <button class="btn btn-secondary w-100" disabled>Already Booked</button>
                 {% elif trek.available_slots == 0 %}
